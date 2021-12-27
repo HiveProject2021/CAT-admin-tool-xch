@@ -12,59 +12,59 @@ import redis
 from typing import Dict, Optional, Tuple, Iterable, Union, List
 from blspy import AugSchemeMPL, G2Element, PrivateKey
 
-from chives.cmds.wallet_funcs import get_wallet
-from chives.rpc.wallet_rpc_client import WalletRpcClient
-from chives.util.default_root import DEFAULT_ROOT_PATH
-from chives.util.config import load_config
-from chives.util.ints import uint16
-from chives.util.byte_types import hexstr_to_bytes
-from chives.types.blockchain_format.program import Program
+from chia.cmds.wallet_funcs import get_wallet
+from chia.rpc.wallet_rpc_client import WalletRpcClient
+from chia.util.default_root import DEFAULT_ROOT_PATH
+from chia.util.config import load_config
+from chia.util.ints import uint16
+from chia.util.byte_types import hexstr_to_bytes
+from chia.types.blockchain_format.program import Program
 from clvm_tools.clvmc import compile_clvm_text
 from clvm_tools.binutils import assemble
-from chives.types.spend_bundle import SpendBundle
-from chives.wallet.cc_wallet.cc_utils import (
+from chia.types.spend_bundle import SpendBundle
+from chia.wallet.cc_wallet.cc_utils import (
     construct_cc_puzzle,
     CC_MOD,
     SpendableCC,
     unsigned_spend_bundle_for_spendable_ccs,
 )
-from chives.util.bech32m import decode_puzzle_hash
+from chia.util.bech32m import decode_puzzle_hash
 
-from chives.consensus.constants import ConsensusConstants
-from chives.util.hash import std_hash
-from chives.types.announcement import Announcement
-from chives.types.blockchain_format.coin import Coin
-from chives.types.blockchain_format.program import Program
-from chives.types.blockchain_format.sized_bytes import bytes32
-from chives.types.coin_spend import CoinSpend
-from chives.types.condition_opcodes import ConditionOpcode
-from chives.types.condition_with_args import ConditionWithArgs
-from chives.types.spend_bundle import SpendBundle
-from chives.util.clvm import int_from_bytes, int_to_bytes
-from chives.util.condition_tools import conditions_by_opcode, conditions_for_solution, pkm_pairs_for_conditions_dict
-from chives.util.ints import uint32, uint64
-from chives.util.byte_types import hexstr_to_bytes
+from chia.consensus.constants import ConsensusConstants
+from chia.util.hash import std_hash
+from chia.types.announcement import Announcement
+from chia.types.blockchain_format.coin import Coin
+from chia.types.blockchain_format.program import Program
+from chia.types.blockchain_format.sized_bytes import bytes32
+from chia.types.coin_spend import CoinSpend
+from chia.types.condition_opcodes import ConditionOpcode
+from chia.types.condition_with_args import ConditionWithArgs
+from chia.types.spend_bundle import SpendBundle
+from chia.util.clvm import int_from_bytes, int_to_bytes
+from chia.util.condition_tools import conditions_by_opcode, conditions_for_solution, pkm_pairs_for_conditions_dict
+from chia.util.ints import uint32, uint64
+from chia.util.byte_types import hexstr_to_bytes
 
 
-from chives.types.blockchain_format.classgroup import ClassgroupElement
-from chives.types.blockchain_format.coin import Coin
-from chives.types.blockchain_format.foliage import TransactionsInfo
-from chives.types.blockchain_format.program import SerializedProgram
-from chives.types.blockchain_format.sized_bytes import bytes32
-from chives.types.blockchain_format.slots import InfusedChallengeChainSubSlot
-from chives.types.blockchain_format.vdf import VDFInfo, VDFProof
-from chives.types.end_of_slot_bundle import EndOfSubSlotBundle
-from chives.types.full_block import FullBlock
-from chives.types.unfinished_block import UnfinishedBlock
+from chia.types.blockchain_format.classgroup import ClassgroupElement
+from chia.types.blockchain_format.coin import Coin
+from chia.types.blockchain_format.foliage import TransactionsInfo
+from chia.types.blockchain_format.program import SerializedProgram
+from chia.types.blockchain_format.sized_bytes import bytes32
+from chia.types.blockchain_format.slots import InfusedChallengeChainSubSlot
+from chia.types.blockchain_format.vdf import VDFInfo, VDFProof
+from chia.types.end_of_slot_bundle import EndOfSubSlotBundle
+from chia.types.full_block import FullBlock
+from chia.types.unfinished_block import UnfinishedBlock
 
-from chives.wallet.derive_keys import master_sk_to_wallet_sk
-from chives.wallet.puzzles.p2_delegated_puzzle_or_hidden_puzzle import (
+from chia.wallet.derive_keys import master_sk_to_wallet_sk
+from chia.wallet.puzzles.p2_delegated_puzzle_or_hidden_puzzle import (
     DEFAULT_HIDDEN_PUZZLE_HASH,
     calculate_synthetic_secret_key,
     puzzle_for_pk,
     solution_for_conditions,
 )
-from chives.wallet.puzzles.puzzle_utils import (
+from chia.wallet.puzzles.puzzle_utils import (
     make_assert_aggsig_condition,
     make_assert_coin_announcement,
     make_assert_puzzle_announcement,
@@ -81,16 +81,16 @@ from chives.wallet.puzzles.puzzle_utils import (
     make_assert_my_puzzlehash,
     make_assert_my_amount,
 )
-from chives.util.keychain import Keychain, bytes_from_mnemonic, bytes_to_mnemonic, generate_mnemonic, mnemonic_to_seed
+from chia.util.keychain import Keychain, bytes_from_mnemonic, bytes_to_mnemonic, generate_mnemonic, mnemonic_to_seed
 
-from chives.consensus.default_constants import DEFAULT_CONSTANTS
+from chia.consensus.default_constants import DEFAULT_CONSTANTS
 
-from chives.rpc.full_node_rpc_api import FullNodeRpcApi
-from chives.rpc.full_node_rpc_client import FullNodeRpcClient
-from chives.util.default_root import DEFAULT_ROOT_PATH
-from chives.util.config import load_config
-from chives.util.ints import uint16
-from chives.util.misc import format_bytes
+from chia.rpc.full_node_rpc_api import FullNodeRpcApi
+from chia.rpc.full_node_rpc_client import FullNodeRpcClient
+from chia.util.default_root import DEFAULT_ROOT_PATH
+from chia.util.config import load_config
+from chia.util.ints import uint16
+from chia.util.misc import format_bytes
 
 
 # Loading the client requires the standard chia root directory configuration that all of the chia commands rely on
@@ -463,7 +463,7 @@ class WalletTool:
         selected = config["selected_network"]
         prefix = config["network_overrides"]["config"][selected]["address_prefix"]
         log = logging.Logger
-        db_connection = await aiosqlite.connect("/home/wang/.chives/standalone_wallet/db/blockchain_v1_mainnet.sqlite")
+        db_connection = await aiosqlite.connect("/home/wang/.chia/standalone_wallet/db/blockchain_v1_mainnet.sqlite")
         
         #手工输入来构建参数部分代码
         #SendToAmount = uint64(60000)
@@ -507,7 +507,7 @@ class WalletTool:
         #print("===================================================")        
         #ResultStr = str(generate_signed_transaction)
         #ResultStrValue = ResultStr.replace("\'","\"")
-        #print("curl --insecure --cert ~/.chives/mainnet/config/ssl/full_node/private_full_node.crt --key ~/.chives/mainnet/config/ssl/full_node/private_full_node.key -d '{        \"spend_bundle\":")
+        #print("curl --insecure --cert ~/.chia/mainnet/config/ssl/full_node/private_full_node.crt --key ~/.chia/mainnet/config/ssl/full_node/private_full_node.key -d '{        \"spend_bundle\":")
         #print(ResultStrValue)
         #print("}' -H \"Content-Type: application/json\" -X POST https://localhost:9755/push_tx")
         #print("===================================================")   
@@ -518,7 +518,7 @@ class WalletTool:
         selected = config["selected_network"]
         prefix = config["network_overrides"]["config"][selected]["address_prefix"]
         log = logging.Logger
-        db_connection = await aiosqlite.connect("~/.chives/mainnet/db/blockchain_v1_mainnet.sqlite")
+        db_connection = await aiosqlite.connect("~/.chia/mainnet/db/blockchain_v1_mainnet.sqlite")
         
         cursor = await db_connection.execute("SELECT * from coin_record WHERE coin_name=?", (coin_name,))
         row = await cursor.fetchone()
@@ -530,7 +530,7 @@ class WalletTool:
         selected = config["selected_network"]
         prefix = config["network_overrides"]["config"][selected]["address_prefix"]
         log = logging.Logger
-        db_connection = await aiosqlite.connect("~/.chives/mainnet/db/blockchain_v1_mainnet.sqlite")
+        db_connection = await aiosqlite.connect("~/.chia/mainnet/db/blockchain_v1_mainnet.sqlite")
         
         cursor = await db_connection.execute("SELECT * from coin_record WHERE coin_name=?", (coin_name,))
         row = await cursor.fetchone()
