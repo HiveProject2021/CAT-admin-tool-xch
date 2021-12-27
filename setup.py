@@ -6,7 +6,7 @@ with open("README.md", "rt") as fh:
     long_description = fh.read()
 
 dependencies = [
-    "chia-blockchain@git+https://github.com/Chia-Network/chia-blockchain.git@protocol_and_cats_rebased#23d571d9bb6b5003b49dee7ee31c1799358c5349",
+    "chives-wallet@git+https://github.com/HiveProject2021/chives-light-wallet.git@main#6e226ab33b4ab0b17fd890f09ca920216fbeb631",
 ]
 
 dev_dependencies = [
@@ -21,7 +21,7 @@ setup(
     entry_points={
         "console_scripts": ["cats = cats.cats:main"],
     },
-    author_email="m.hauff@chia.net",
+    author_email="m.hauff@chives.net",
     setup_requires=["setuptools_scm"],
     install_requires=dependencies,
     url="https://github.com/Chia-Network",
