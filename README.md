@@ -7,9 +7,9 @@ Install
 **Ubuntu/MacOSs**
 ```
 cd ~/
-rm -rf ./CAT-admin-tool
-git clone https://github.com/HiveProject2021/CAT-admin-tool.git
-cd CAT-admin-tool
+rm -rf ./CAT-admin-tool-xch
+git clone https://github.com/HiveProject2021/CAT-admin-tool-xch.git
+cd CAT-admin-tool-xch
 python3 -m venv venv
 . ./venv/bin/activate
 python -m pip install --upgrade pip setuptools wheel
@@ -19,8 +19,8 @@ pip install .
 
 **Windows Powershell**
 ```
-git clone https://github.com/HiveProject2021/CAT-admin-tool.git
-cd CAT-admin-tool
+git clone https://github.com/HiveProject2021/CAT-admin-tool-xch.git
+cd CAT-admin-tool-xch
 py -m venv venv
 ./venv/Scripts/activate
 python -m pip install --upgrade pip setuptools wheel
